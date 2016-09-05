@@ -9,8 +9,10 @@ use Zend\Diactoros\ServerRequestFactory;
 if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . preg_replace('#(\?.*)$#', '', $_SERVER['REQUEST_URI']))) {
     return false;
 }
-
 require_once __DIR__ . '/../vendor/autoload.php';
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 
 $application = function (ServerRequestInterface $request, callable $next) {
     // Write your application: return a response
@@ -19,11 +21,13 @@ $application = function (ServerRequestInterface $request, callable $next) {
      */
 };
 
+
+// ---------------------------------------------------------------------------------------------------------------------
+
 // Run the application
 $next = function () {
     return new TextResponse('Page not found', 404);
 };
 $response = $application(ServerRequestFactory::fromGlobals(), $next);
-
 // Emit the response (with header() and echo)
 (new SapiEmitter)->emit($response);
