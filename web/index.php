@@ -17,7 +17,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $application = function (ServerRequestInterface $request, callable $next) {
     // Write your application: return a response
     /**
-     * @see \Psr\Http\Message\ResponseInterface
+     * @see \Zend\Diactoros\Response\TextResponse
+     * @see \Zend\Diactoros\Response\HtmlResponse
+     * @see \Zend\Diactoros\Response\JsonResponse
      */
 };
 
