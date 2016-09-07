@@ -13,3 +13,7 @@ To run the web application you don't need to install and configure Apache or Ngi
 ## Step 1: write and run a middleware
 
 Write your first middleware. The web application (in [index.php](web/index.php)) should show "Hello world!" at [http://localhost:8000](http://localhost:8000/).
+
+## Step 2: use the request
+
+Use the request so that when querying [http://localhost:8000/?name=Bob](http://localhost:8000/?name=Bob) the application displays "Hello Bob!".
