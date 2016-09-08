@@ -18,13 +18,18 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 
 $application = function (ServerRequestInterface $request) {
-    return new TextResponse('Hello world!');
+    $queryParams = $request->getQueryParams();
+    $name = !empty($queryParams['name']) ? $queryParams['name'] : 'world';
+    return new TextResponse('Hello ' . $name . '!');
 };
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 // Run the application
-$response = $application(ServerRequestFactory::fromGlobals());
+$lastFallback = function () {
+    return new TextResponse('Page not found', 404);
+};
+$response = $application(ServerRequestFactory::fromGlobals(), $lastFallback);
 // Emit the response (with header() and echo)
 (new SapiEmitter)->emit($response);
