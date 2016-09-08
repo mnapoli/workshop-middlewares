@@ -14,7 +14,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // ---------------------------------------------------------------------------------------------------------------------
 
 
-$application = function (ServerRequestInterface $request, callable $next) {
+$application = function (ServerRequestInterface $request) {
     return new TextResponse('Hello world!');
 };
 
@@ -22,9 +22,6 @@ $application = function (ServerRequestInterface $request, callable $next) {
 // ---------------------------------------------------------------------------------------------------------------------
 
 // Run the application
-$next = function () {
-    return new TextResponse('Page not found', 404);
-};
-$response = $application(ServerRequestFactory::fromGlobals(), $next);
+$response = $application(ServerRequestFactory::fromGlobals());
 // Emit the response (with header() and echo)
 (new SapiEmitter)->emit($response);
