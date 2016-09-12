@@ -1,6 +1,8 @@
 <?php
 
 use Psr\Http\Message\ServerRequestInterface;
+use Superpress\Middleware\ErrorHandler;
+use Superpress\Middleware\Pipe;
 use Zend\Diactoros\Response\SapiEmitter;
 use Zend\Diactoros\Response\TextResponse;
 use Zend\Diactoros\ServerRequestFactory;
@@ -17,11 +19,15 @@ require_once __DIR__ . '/../vendor/autoload.php';
 // ---------------------------------------------------------------------------------------------------------------------
 
 
-$application = function (ServerRequestInterface $request) {
-    $queryParams = $request->getQueryParams();
-    $name = !empty($queryParams['name']) ? $queryParams['name'] : 'world';
-    return new TextResponse('Hello ' . $name . '!');
-};
+$application = new Pipe([
+    new ErrorHandler(),
+    function (ServerRequestInterface $request, callable $next) {
+        throw new Exception('Test'); // to remove
+        $queryParams = $request->getQueryParams();
+        $name = !empty($queryParams['name']) ? $queryParams['name'] : 'world';
+        return new TextResponse('Hello ' . $name . '!');
+    }
+]);
 
 
 // ---------------------------------------------------------------------------------------------------------------------
