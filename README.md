@@ -17,3 +17,9 @@ Write your first middleware. The web application (in [index.php](web/index.php))
 ## Step 2: use the request
 
 Use the request so that when querying [http://localhost:8000/?name=Bob](http://localhost:8000/?name=Bob) the application displays "Hello Bob!".
+
+## Step 3: compose middlewares to handle errors nicely
+
+Use a middleware [`Pipe`](src/Middleware/Pipe.php) to assemble multiple middlewares into a bigger application.
+
+The [`ErrorHandler`](src/Middleware/ErrorHandler.php) middleware must run before the next middlewares: it will catch exceptions thrown in next middlewares and show an error page.

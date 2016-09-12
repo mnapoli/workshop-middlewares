@@ -23,6 +23,7 @@
         "process-timeout": 36000
     },
     "scripts": {
-        "web": "php -S 0.0.0.0:8000 -t web/ web/index.php"
+        "web": "php -S 0.0.0.0:8000 -t web/ web/index.php",
+        "tests": "phpunit"
     }
 }
