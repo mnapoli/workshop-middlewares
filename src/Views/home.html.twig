@@ -1,0 +1,38 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+
+    <div class="blog-header">
+        <h1 class="blog-title">Superpress</h1>
+        <p class="lead blog-description">The super great alternative blog engine.</p>
+    </div>
+
+    <div class="row">
+
+        <div class="col-sm-8 blog-main">
+            {% for article in articles %}
+                <div class="blog-post">
+                    <h2 class="blog-post-title">{{ article.title }}</h2>
+                    <p>{{ article.content|nl2br }}</p>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="col-sm-3 col-sm-offset-1 blog-sidebar">
+            <div class="sidebar-module sidebar-module-inset">
+                <h4>About</h4>
+                <p>Superpress is so hot it can <em>melt steam beams</em> while also being as cool as a cucumber.</p>
+            </div>
+            <div class="sidebar-module">
+                <h4>All articles</h4>
+                <ol class="list-unstyled">
+                    {% for id, article in articles %}
+                        <li><a href="#">{{ article.title }}</a></li>
+                    {% endfor %}
+                </ol>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock %}

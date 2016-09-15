@@ -23,3 +23,7 @@ Use the request so that when querying [http://localhost:8000/?name=Bob](http://l
 Use a middleware [`Pipe`](src/Middleware/Pipe.php) to assemble multiple middlewares into a bigger application.
 
 The [`ErrorHandler`](src/Middleware/ErrorHandler.php) middleware must run before the next middlewares: it will catch exceptions thrown in next middlewares and show an error page.
+
+## Step 4: split the flow with a router
+
+Use the router to map URLs to handlers (aka controllers).
