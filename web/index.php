@@ -1,9 +1,9 @@
 <?php
 
-use Psr\Http\Message\ServerRequestInterface;
 use Superpress\Container;
 use Superpress\Middleware\ErrorHandler;
 use Superpress\Middleware\Pipe;
+use Superpress\Middleware\Router;
 use Zend\Diactoros\Response\HtmlResponse;
 use Zend\Diactoros\Response\SapiEmitter;
 use Zend\Diactoros\Response\TextResponse;
@@ -25,19 +25,18 @@ $container = new Container;
 
 $application = new Pipe([
     new ErrorHandler(),
-    function (ServerRequestInterface $request, callable $next) use ($container) {
-        $url = $request->getUri()->getPath();
-        $twig = $container->twig();
-        if ($url === '/') {
+    new Router([
+        '/' => function () use ($container) {
+            $twig = $container->twig();
             $latestArticles = $container->articleRepository()->getArticles();
             return new HtmlResponse($twig->render('home.html.twig', [
                 'articles' => $latestArticles,
             ]));
-        } elseif ($url === '/about') {
+        },
+        '/about' => function () use ($container) {
             return new HtmlResponse($container->twig()->render('about.html.twig'));
-        }
-        return $next($request);
-    }
+        },
+    ]),
 ]);
 
 
