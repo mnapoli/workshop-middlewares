@@ -37,6 +37,25 @@ class RouterTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, $calls);
     }
+    /**
+     * @test
+     */
+    public function resolves_route_attributes()
+    {
+        $router = new Router([
+            '/{test}' => function (ServerRequestInterface $request) {
+                return new TextResponse($request->getAttribute('test'));
+            },
+        ]);
+
+        $request = new ServerRequest([], [], '/foo');
+        $next = function () {
+            throw new \Exception('No route matched');
+        };
+        $response = $router->__invoke($request, $next);
+
+        $this->assertEquals('foo', $response->getBody()->getContents());
+    }
 
     /**
      * @test
