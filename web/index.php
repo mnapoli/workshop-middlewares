@@ -2,6 +2,7 @@
 
 use Superpress\Container;
 use Superpress\Middleware\ErrorHandler;
+use Superpress\Middleware\HttpBasicAuthentication;
 use Superpress\Middleware\Pipe;
 use Superpress\Middleware\Router;
 use Zend\Diactoros\Response\HtmlResponse;
@@ -25,6 +26,9 @@ $container = new Container;
 
 $application = new Pipe([
     new ErrorHandler(),
+    new HttpBasicAuthentication([
+        'user' => 'password',
+    ]),
     new Router([
         '/' => function () use ($container) {
             $twig = $container->twig();
