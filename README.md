@@ -27,3 +27,9 @@ The [`ErrorHandler`](src/Middleware/ErrorHandler.php) middleware must run before
 ## Step 4: split the flow with a router
 
 Use the router to map URLs to handlers (aka controllers).
+
+## Step 5: authentication middleware
+
+Write a middleware that requires a valid HTTP "Basic" authentication to access the website. To do that you can complete the existing [`HttpBasicAuthentication`](src/Middleware/HttpBasicAuthentication.php) class, you can also run the tests (test-driven development) with `composer tests`.
+
+Once that is done, use the middleware in your application to prevent access to the whole website.
