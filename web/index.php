@@ -6,6 +6,7 @@ use Superpress\Middleware\HttpBasicAuthentication;
 use Superpress\Middleware\Pipe;
 use Superpress\Middleware\Router;
 use Zend\Diactoros\Response\HtmlResponse;
+use Zend\Diactoros\Response\JsonResponse;
 use Zend\Diactoros\Response\SapiEmitter;
 use Zend\Diactoros\Response\TextResponse;
 use Zend\Diactoros\ServerRequestFactory;
@@ -26,9 +27,6 @@ $container = new Container;
 
 $application = new Pipe([
     new ErrorHandler(),
-    new HttpBasicAuthentication([
-        'user' => 'password',
-    ]),
     new Router([
         '/' => function () use ($container) {
             $twig = $container->twig();
@@ -40,6 +38,17 @@ $application = new Pipe([
         '/about' => function () use ($container) {
             return new HtmlResponse($container->twig()->render('about.html.twig'));
         },
+        '/api/{path:.*}' => new Pipe([
+            new HttpBasicAuthentication(['user' => 'password']),
+            new Router([
+                '/api/articles' => function () use ($container) {
+                    return new JsonResponse($container->articleRepository()->getArticles());
+                },
+                '/api/time' => function () {
+                    return new JsonResponse(time());
+                },
+            ]),
+        ]),
     ]),
 ]);
 
