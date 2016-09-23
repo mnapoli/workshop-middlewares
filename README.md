@@ -44,3 +44,9 @@ Add an API to your application (JSON responses):
 The API must require authentication (HTTP basic auth), but the website must be publicly accessible (no authentication anymore).
 
 Remember the router or the middleware pipe are like any other middleware: you can nest them and use them several times.
+
+## Step 7: request attributes
+
+Add an API endpoint (`/api/whoami`) that returns the user name.
+
+You can pass the user name from the authentication middleware to the controller using request attributes.

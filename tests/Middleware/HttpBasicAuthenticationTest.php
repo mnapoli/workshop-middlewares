@@ -2,6 +2,7 @@
 
 namespace Test\Middleware;
 
+use Psr\Http\Message\ServerRequestInterface;
 use Superpress\Middleware\HttpBasicAuthentication;
 use Zend\Diactoros\Response\TextResponse;
 use Zend\Diactoros\ServerRequest;
@@ -74,5 +75,24 @@ class HttpBasicAuthenticationTest extends \PHPUnit_Framework_TestCase
         });
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('Hello world!', $response->getBody()->getContents());
+    }
+
+    /**
+     * @test
+     */
+    public function records_user_name_in_request_attribute()
+    {
+        $middleware = new HttpBasicAuthentication([
+            'bob' => 'secretpassword',
+        ]);
+
+        $request = new ServerRequest;
+        $request = $request->withAddedHeader('Authorization', 'Basic ' . base64_encode('bob:secretpassword'));
+
+        $response = $middleware->__invoke($request, function (ServerRequestInterface $request) {
+            return new TextResponse('Hello ' . $request->getAttribute('user'));
+        });
+        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertEquals('Hello bob', $response->getBody()->getContents());
     }
 }
