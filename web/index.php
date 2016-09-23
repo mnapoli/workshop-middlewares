@@ -1,5 +1,6 @@
 <?php
 
+use Psr\Http\Message\ServerRequestInterface;
 use Superpress\Container;
 use Superpress\Middleware\ErrorHandler;
 use Superpress\Middleware\HttpBasicAuthentication;
@@ -46,6 +47,9 @@ $application = new Pipe([
                 },
                 '/api/time' => function () {
                     return new JsonResponse(time());
+                },
+                '/api/whoami' => function (ServerRequestInterface $request) {
+                    return new JsonResponse($request->getAttribute('user'));
                 },
             ]),
         ]),

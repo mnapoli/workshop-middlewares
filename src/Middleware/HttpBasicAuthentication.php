@@ -40,6 +40,9 @@ class HttpBasicAuthentication implements Middleware
         if (isset($this->users[$username]) && ($this->users[$username] === $password)) {
             // Authenticated
 
+            // Store the username as a request attribute
+            $request = $request->withAttribute('user', $username);
+
             // Call the next middleware
             return $next($request);
         }
