@@ -38,7 +38,7 @@ $application = new Pipe([
         '/about' => function () use ($container) {
             return new HtmlResponse($container->twig()->render('about.html.twig'));
         },
-        '/api/{path:.*}' => new Pipe([
+        '/api/{path}' => new Pipe([
             new HttpBasicAuthentication(['user' => 'password']),
             new Router([
                 '/api/articles' => function () use ($container) {
