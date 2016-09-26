@@ -26,6 +26,8 @@ class HttpBasicAuthentication implements Middleware
         $header = $request->getHeaderLine('Authorization');
         if (strpos($header, 'Basic') !== 0) {
             // No authentication found: 401
+            // Hint: set the 'WWW-Authenticate' to 'Basic realm="Superpress"' to trigger authentication
+            // in web browsers.
             // TODO
         }
 
