@@ -2,6 +2,7 @@
 
 namespace Test\Middleware;
 
+use DI\ContainerBuilder;
 use Psr\Http\Message\ResponseInterface;
 use Superpress\Middleware\Pipe;
 use Zend\Diactoros\Response\TextResponse;
@@ -14,7 +15,8 @@ class PipeTest extends \PHPUnit_Framework_TestCase
      */
     public function calls_middlewares_in_correct_order()
     {
-        $pipe = new Pipe([
+        $container = ContainerBuilder::buildDevContainer();
+        $pipe = new Pipe($container, [
             function ($request, callable $next) {
                 /** @var ResponseInterface $response */
                 $response = $next($request);
@@ -37,7 +39,8 @@ class PipeTest extends \PHPUnit_Framework_TestCase
      */
     public function calls_next_middleware()
     {
-        $pipe = new Pipe([
+        $container = ContainerBuilder::buildDevContainer();
+        $pipe = new Pipe($container, [
             function ($request, callable $next) {
                 return $next($request);
             },

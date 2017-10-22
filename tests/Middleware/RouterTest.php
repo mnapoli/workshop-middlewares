@@ -2,6 +2,7 @@
 
 namespace Test\Middleware;
 
+use DI\ContainerBuilder;
 use Psr\Http\Message\ServerRequestInterface;
 use Superpress\Middleware\Router;
 use Zend\Diactoros\Response;
@@ -15,8 +16,10 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function routes_request_to_controller()
     {
+        $container = ContainerBuilder::buildDevContainer();
+
         $calls = 0;
-        $router = new Router([
+        $router = new Router($container, [
             '/' => function () {
                 return new Response;
             },
@@ -42,7 +45,9 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function resolves_route_attributes()
     {
-        $router = new Router([
+        $container = ContainerBuilder::buildDevContainer();
+
+        $router = new Router($container, [
             '/{test}' => function (ServerRequestInterface $request) {
                 return new TextResponse($request->getAttribute('test'));
             },
@@ -62,10 +67,12 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function calls_handler_with_middleware_parameters()
     {
+        $container = ContainerBuilder::buildDevContainer();
+
         $next = function () {
             return new TextResponse('Hello world!');
         };
-        $router = new Router([
+        $router = new Router($container, [
             '/' => function (ServerRequestInterface $request, callable $next) {
                 return $next($request);
             },
@@ -79,10 +86,12 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     public function calls_next_middleware_if_no_route_matched()
     {
+        $container = ContainerBuilder::buildDevContainer();
+
         $next = function () {
             return new TextResponse('Hello world!');
         };
-        $router = new Router([]);
+        $router = new Router($container, []);
         $response = $router->__invoke(new ServerRequest, $next);
         $this->assertEquals('Hello world!', $response->getBody()->getContents());
     }
