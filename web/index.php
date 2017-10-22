@@ -1,7 +1,8 @@
 <?php
 
+use DI\ContainerBuilder;
 use Psr\Http\Message\ServerRequestInterface;
-use Superpress\Container;
+use Superpress\Blog\ArticleRepository;
 use Superpress\Middleware\ErrorHandler;
 use Superpress\Middleware\HttpBasicAuthentication;
 use Superpress\Middleware\Pipe;
@@ -21,7 +22,18 @@ if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . preg_replace('#(\?.*)$
 }
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$container = new Container;
+$container = ContainerBuilder::buildDevContainer();
+$container->set(Twig_Environment::class, function () {
+    $loader = new Twig_Loader_Filesystem(__DIR__ . '/../src/Views');
+    return new Twig_Environment($loader, [
+        'debug' => true,
+        'cache' => false,
+        'strict_variables' => false,
+    ]);
+});
+$container->set(HttpBasicAuthentication::class, function () {
+    return new HttpBasicAuthentication(['user' => 'password']);
+});
 
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -30,20 +42,20 @@ $application = new Pipe([
     new ErrorHandler(),
     new Router([
         '/' => function () use ($container) {
-            $twig = $container->twig();
-            $latestArticles = $container->articleRepository()->getArticles();
+            $twig = $container->get(Twig_Environment::class);
+            $latestArticles = $container->get(ArticleRepository::class)->getArticles();
             return new HtmlResponse($twig->render('home.html.twig', [
                 'articles' => $latestArticles,
             ]));
         },
         '/about' => function () use ($container) {
-            return new HtmlResponse($container->twig()->render('about.html.twig'));
+            return new HtmlResponse($container->get(Twig_Environment::class)->render('about.html.twig'));
         },
         '/api/{path}' => new Pipe([
             new HttpBasicAuthentication(['user' => 'password']),
             new Router([
                 '/api/articles' => function () use ($container) {
-                    return new JsonResponse($container->articleRepository()->getArticles());
+                    return new JsonResponse($container->get(ArticleRepository::class)->getArticles());
                 },
                 '/api/time' => function () {
                     return new JsonResponse(time());
