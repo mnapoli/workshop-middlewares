@@ -8,7 +8,8 @@
         "twig/twig": "^1",
         "filp/whoops": "^2",
         "phpunit/phpunit": "^4.8",
-        "nikic/fast-route": "^1"
+        "nikic/fast-route": "^1",
+        "php-di/php-di": "^5.4"
     },
     "autoload": {
         "psr-4": {
