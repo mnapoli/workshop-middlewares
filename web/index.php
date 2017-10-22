@@ -1,7 +1,8 @@
 <?php
 
+use DI\ContainerBuilder;
 use Psr\Http\Message\ServerRequestInterface;
-use Superpress\Container;
+use Superpress\Blog\ArticleRepository;
 use Superpress\Middleware\ErrorHandler;
 use Superpress\Middleware\HttpBasicAuthentication;
 use Superpress\Middleware\Pipe;
@@ -21,29 +22,39 @@ if (php_sapi_name() === 'cli-server' && is_file(__DIR__ . preg_replace('#(\?.*)$
 }
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$container = new Container;
+$container = ContainerBuilder::buildDevContainer();
+$container->set(Twig_Environment::class, function () {
+    $loader = new Twig_Loader_Filesystem(__DIR__ . '/../src/Views');
+    return new Twig_Environment($loader, [
+        'debug' => true,
+        'cache' => false,
+        'strict_variables' => false,
+    ]);
+});
+$container->set(HttpBasicAuthentication::class, function () {
+    return new HttpBasicAuthentication(['user' => 'password']);
+});
 
 // ---------------------------------------------------------------------------------------------------------------------
 
 
-$application = new Pipe([
-    new ErrorHandler(),
-    new Router([
-        '/' => function () use ($container) {
-            $twig = $container->twig();
-            $latestArticles = $container->articleRepository()->getArticles();
+$application = new Pipe($container, [
+    ErrorHandler::class,
+    new Router($container, [
+        '/' => function (Twig_Environment $twig, ArticleRepository $articleRepository) {
+            $latestArticles = $articleRepository->getArticles();
             return new HtmlResponse($twig->render('home.html.twig', [
                 'articles' => $latestArticles,
             ]));
         },
-        '/about' => function () use ($container) {
-            return new HtmlResponse($container->twig()->render('about.html.twig'));
+        '/about' => function (Twig_Environment $twig) {
+            return new HtmlResponse($twig->render('about.html.twig'));
         },
-        '/api/{path}' => new Pipe([
-            new HttpBasicAuthentication(['user' => 'password']),
-            new Router([
-                '/api/articles' => function () use ($container) {
-                    return new JsonResponse($container->articleRepository()->getArticles());
+        '/api/{path}' => new Pipe($container, [
+            HttpBasicAuthentication::class,
+            new Router($container, [
+                '/api/articles' => function (ArticleRepository $articleRepository) {
+                    return new JsonResponse($articleRepository->getArticles());
                 },
                 '/api/time' => function () {
                     return new JsonResponse(time());

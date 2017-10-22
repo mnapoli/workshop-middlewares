@@ -2,6 +2,7 @@
 
 namespace Superpress\Middleware;
 
+use DI\Container;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use Psr\Http\Message\ServerRequestInterface;
@@ -14,9 +15,15 @@ class Router implements Middleware
      */
     private $routes;
 
-    public function __construct(array $routes)
+    /**
+     * @var Container
+     */
+    private $container;
+
+    public function __construct(Container $container, array $routes)
     {
         $this->routes = $routes;
+        $this->container = $container;
     }
 
     public function __invoke(ServerRequestInterface $request, callable $next)
@@ -35,7 +42,10 @@ class Router implements Middleware
             foreach ($attributes as $name => $value) {
                 $request = $request->withAttribute($name, $value);
             }
-            return $handler($request, $next);
+            return $this->container->call($handler, [
+                'request' => $request,
+                'next' => $next,
+            ]);
         }
 
         // in case of 404 or 405 (method not allowed), call the next middleware

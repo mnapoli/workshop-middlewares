@@ -2,6 +2,7 @@
 
 namespace Superpress\Middleware;
 
+use DI\Container;
 use Psr\Http\Message\ServerRequestInterface;
 use Superpress\Middleware;
 
@@ -16,9 +17,15 @@ class Pipe implements Middleware
      */
     private $middlewares;
 
-    public function __construct(array $middlewares)
+    /**
+     * @var Container
+     */
+    private $container;
+
+    public function __construct(Container $container, array $middlewares)
     {
         $this->middlewares = $middlewares;
+        $this->container = $container;
     }
 
     public function __invoke(ServerRequestInterface $request, callable $next)
@@ -26,7 +33,10 @@ class Pipe implements Middleware
         // Go through each middleware, from last to first
         foreach (array_reverse($this->middlewares) as $middleware) {
             $next = function (ServerRequestInterface $request) use ($middleware, $next) {
-                return $middleware($request, $next);
+                return $this->container->call($middleware, [
+                    'request' => $request,
+                    'next' => $next,
+                ]);
             };
         }
 
